@@ -1,32 +1,25 @@
 #include <iostream>
 #include <omp.h>
 
-using namespace std;
-
-int main() 
+int main()
 {
-    int k, n;
+    unsigned int k = 0;
+    std::cout << "Enter number of threads: ";
+    std::cin >> k;
+    int n = 0;
+    std::cout << "Enter N: ";
+    std::cin >> n;
 
-    cout << "Enter num_threads: ";
-    cin >> k;
-    cout << "Enter N: "; 
-    cin >> n;
-
-    int total_sum = 0;
-
-    #pragma omp parallel num_threads(k)
+    int sum = 0;
+#pragma omp parralel for num_threads(k) reduction(+ : sum)
     {
-        int local_sum = 0;
 
-        #pragma omp for reduction(+:total_sum)
-        for (int i = 1; i <= n; ++i)
+        for (int i = 1; i <= n; i += 1)
         {
-            local_sum += i; // Каждый поток суммирует свои элементы
-            total_sum += i; // Общая сумма (редукция)
+            sum += i;
         }
-
-        printf("[%d]: Sum = %d\n", omp_get_thread_num(), local_sum);
+        printf("[%d]: Sum = %d\n", omp_get_thread_num(), sum);
     }
-
-    printf("Sum = %d", total_sum);
+    printf("Sum = %d", sum);
+    return 0;
 }
